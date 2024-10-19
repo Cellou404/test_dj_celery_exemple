@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'posts',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +131,10 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_RESULT_EXPIRES = 3600  # Les résultats des tâches expirent après une heure
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'cellou649@gmail.com'
+EMAIL_HOST_PASSWORD = 'ldut wfml apcg dzhx'
