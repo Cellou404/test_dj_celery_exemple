@@ -22,7 +22,7 @@ def send_top_article_notification(article_uid):
         send_mail(
             f"Nouveau top article : {article.title}",
             f"Découvrez notre nouvel article : {article.title}\n\n{article.content}",
-            'cellou649@gmail.com',
+            settings.EMAIL_HOST_USER,
             recipient_list,
             fail_silently=False,
         )
