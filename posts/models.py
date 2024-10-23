@@ -30,6 +30,8 @@ class Comment(models.Model):
         Article, on_delete=models.CASCADE, 
         verbose_name="article",
         related_name="comments")
+    name = models.CharField(max_length=255, verbose_name="name", null=True)
+    email = models.EmailField(verbose_name="email", null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
