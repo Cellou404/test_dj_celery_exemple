@@ -10,6 +10,7 @@ from .serializers import CommentSerializer
 from .serializers import SubcriberSerializer
 
 from .tasks import send_top_article_notification
+from .tasks import send_comment_notification
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
@@ -34,7 +35,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         article = Article.objects.get(uid=self.kwargs['article_uid'])
-        serializer.save(author=self.request.user, article=article)
+        comment = serializer.save(author=self.request.user, article=article)
+        send_comment_notification.delay(comment.uid)
         return Response(serializer.data)
     
 
