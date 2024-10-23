@@ -51,7 +51,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('uid', 'author', 'article', 'content')
+        fields = (
+            'uid', 'author', 'article', 'content',
+            'name', 'email', 'created_at', 'updated_at',
+        )
 
 
 class SubcriberSerializer(serializers.ModelSerializer):
