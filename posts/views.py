@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework import status
 
 from .models import Article
 from .models import Comment
@@ -25,8 +26,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
         if article.is_top_article:
             send_top_article_notification.delay(article.uid)
 
-        return Response({"message": "Article créé, et les emails sont envoyés si c'est un top article."})
-    
+        return Response(
+            data={"message": "Article Créé avec succès", "article": serializer.data},
+            status=status.HTTP_201_CREATED,
+        )
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
@@ -38,7 +42,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment = serializer.save(author=self.request.user, article=article)
         send_comment_notification.delay(comment.uid)
         return Response(serializer.data)
-    
+
 
 class SubscriberViewSet(viewsets.ModelViewSet):
     queryset = Subscriber.objects.all()
