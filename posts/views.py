@@ -24,10 +24,10 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         # Si c'est un top article, déclencher l'envoi des emails
         if article.is_top_article:
-            send_top_article_notification.delay(article.uid)
+            send_top_article_notification.apply_async(kwargs={'article_uid': article.uid})
 
         return Response(
-            data={"message": "Article Créé avec succès", "article": serializer.data},
+            serializer.data,
             status=status.HTTP_201_CREATED,
         )
 
@@ -40,7 +40,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         article = Article.objects.get(uid=self.kwargs['article_uid'])
         comment = serializer.save(author=self.request.user, article=article)
-        send_comment_notification.delay(comment.uid)
+        send_comment_notification.apply_async(kwargs={'comment_uid': comment.uid})
         return Response(serializer.data)
 
 

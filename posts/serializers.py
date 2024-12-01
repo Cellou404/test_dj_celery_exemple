@@ -44,10 +44,6 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
-    article = serializers.SlugRelatedField(
-        slug_field='uid',
-        queryset=Article.objects.all()
-    )
 
     class Meta:
         model = Comment
@@ -55,6 +51,13 @@ class CommentSerializer(serializers.ModelSerializer):
             'uid', 'author', 'article', 'content',
             'name', 'email', 'created_at', 'updated_at',
         )
+        extra_kwargs = {
+            'uid': {'read_only': True},
+            'author': {'read_only': True},
+            'article': {'read_only': True},
+            'created_at': {'read_only': True},
+            'updated_at': {'read_only': True},
+        }
 
 
 class SubcriberSerializer(serializers.ModelSerializer):
