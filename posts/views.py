@@ -19,10 +19,9 @@ class ArticleViewSet(viewsets.ModelViewSet):
     lookup_field = "uid"
 
     def perform_create(self, serializer):
-        # Crée l'article
         article = serializer.save(author=self.request.user)
 
-        # Si c'est un top article, déclencher l'envoi des emails
+
         if article.is_top_article:
             send_top_article_notification.apply_async(kwargs={'article_uid': article.uid})
 
