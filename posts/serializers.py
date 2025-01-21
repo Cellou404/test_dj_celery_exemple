@@ -5,6 +5,9 @@ from .models import Article
 from .models import Comment
 from .models import Subscriber
 
+from .tasks import send_top_article_notification
+from .tasks import send_comment_notification
+
 
 class AuthSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,6 +43,17 @@ class ArticleSerializer(serializers.ModelSerializer):
         comments = Comment.objects.filter(article=obj)
         serializer = CommentSerializer(comments, many=True)
         return serializer.data
+    
+    def create(self, validated_data):
+        author = self.context['request'].user
+        article = Article.objects.create(
+            author=author,
+            **validated_data
+        )
+        send_top_article_notification.apply_async(args={
+            "article_uid": article.uid,
+        })
+
     
 
 class CommentSerializer(serializers.ModelSerializer):
