@@ -8,7 +8,6 @@ from .models import Subscriber
 from .serializers import ArticleSerializer
 from .serializers import CommentSerializer
 from .serializers import SubcriberSerializer
-from .tasks import send_comment_notification
 from .tasks import send_top_article_notification
 
 
@@ -36,13 +35,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     lookup_field = "uid"
 
-    def perform_create(self, serializer):
-        article = Article.objects.get(uid=self.kwargs["article_uid"])
-        comment = serializer.save(author=self.request.user, article=article)
-        send_comment_notification.apply_async(
-            kwargs={"comment_uid": comment.uid}
-        )
-        return Response(serializer.data)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["author"] = self.request.user
+        context["article"] = Article.objects.get(uid=self.kwargs["article_uid"])
+        return context
 
 
 class SubscriberViewSet(viewsets.ModelViewSet):

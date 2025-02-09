@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import Article
 from .models import Comment
 from .models import Subscriber
+from .tasks import send_comment_notification
 from .tasks import send_top_article_notification
 
 
@@ -72,6 +73,18 @@ class CommentSerializer(serializers.ModelSerializer):
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
         }
+
+    def create(self, validated_data):
+        author = self.context['author']
+        article = self.context['article']
+        comment = Comment.objects.create(
+            author=author,
+            article=article,
+            **validated_data
+        )
+        send_comment_notification.apply_async(args={
+            "comment_uid": comment.uid,
+        })
 
 
 class SubcriberSerializer(serializers.ModelSerializer):
